@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator — OIBSIP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1d2128;
+    --panel-raised: #262b34;
+    --key: #2a2f39;
+    --key-hover: #343a46;
+    --accent: #4fd1c5;
+    --accent-dim: rgba(79, 209, 197, 0.15);
+    --op: #ff9d5c;
+    --op-dim: rgba(255, 157, 92, 0.12);
+    --text: #eef1f5;
+    --text-dim: #8b93a3;
+    --danger: #ff6b6b;
+    --border: #333844;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(79, 209, 197, 0.06), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255, 157, 92, 0.05), transparent 40%);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    padding: 24px;
+  }
+
+  .calc {
+    width: 100%;
+    max-width: 340px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .calc-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .calc-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .display {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 18px 18px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .display::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 18px; right: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+  }
+
+  .expression {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    min-height: 18px;
+    text-align: right;
+    word-break: break-all;
+    margin-bottom: 6px;
+  }
+
+  .result {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 38px;
+    font-weight: 500;
+    text-align: right;
+    white-space: nowrap;
+    overflow-x: auto;
+    letter-spacing: -0.01em;
+  }
+
+  .result.error { color: var(--danger); font-size: 22px; }
+
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 0;
+    background: var(--key);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.12s ease, transform 0.06s ease;
+  }
+
+  button:hover { background: var(--key-hover); }
+  button:active { transform: scale(0.96); }
+
+  button.op {
+    background: var(--op-dim);
+    color: var(--op);
+    font-size: 20px;
+  }
+  button.op:hover { background: rgba(255, 157, 92, 0.22); }
+
+  button.equals {
+    background: var(--accent);
+    color: #0d1512;
+    font-weight: 700;
+  }
+  button.equals:hover { background: #63dccf; }
+
+  button.func {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+  button.func:hover { background: var(--panel-raised); color: var(--text); }
+
+  button.zero { grid-column: span 2; }
+
+  .footer-note {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+
+<div class="calc">
+  <div class="calc-label">Calculator · OIBSIP Web Dev L2</div>
+
+  <div class="display">
+    <div class="expression" id="expression"></div>
+    <div class="result" id="result">0</div>
+  </div>
+
+  <div class="keys">
+    <button class="func" data-action="clear">C</button>
+    <button class="func" data-action="backspace">⌫</button>
+    <button class="func" data-action="percent">%</button>
+    <button class="op" data-op="÷">÷</button>
+
+    <button data-num="7">7</button>
+    <button data-num="8">8</button>
+    <button data-num="9">9</button>
+    <button class="op" data-op="×">×</button>
+
+    <button data-num="4">4</button>
+    <button data-num="5">5</button>
+    <button data-num="6">6</button>
+    <button class="op" data-op="−">−</button>
+
+    <button data-num="1">1</button>
+    <button data-num="2">2</button>
+    <button data-num="3">3</button>
+    <button class="op" data-op="+">+</button>
+
+    <button class="zero" data-num="0">0</button>
+    <button data-action="decimal">.</button>
+    <button class="equals" data-action="equals">=</button>
+  </div>
+
+  <div class="footer-note">Marium Rehan Baig — Web Development &amp; Designing</div>
+</div>
+
+<script>
+(function () {
+  const expressionEl = document.getElementById('expression');
+  const resultEl = document.getElementById('result');
+
+  let currentValue = '0';
+  let previousValue = null;
+  let pendingOperator = null;
+  let expressionText = '';
+  let justEvaluated = false;
+
+  const opSymbolToJs = { '+': '+', '−': '-', '×': '*', '÷': '/' };
+
+  function updateDisplay() {
+    expressionEl.textContent = expressionText;
+    resultEl.textContent = currentValue;
+    resultEl.classList.remove('error');
+  }
+
+  function showError(message) {
+    resultEl.textContent = message;
+    resultEl.classList.add('error');
+    currentValue = '0';
+    previousValue = null;
+    pendingOperator = null;
+    expressionText = '';
+  }
+
+  function inputDigit(digit) {
+    if (justEvaluated) {
+      currentValue = '0';
+      expressionText = '';
+      justEvaluated = false;
+    }
+    if (currentValue === '0') {
+      currentValue = digit;
+    } else {
+      currentValue += digit;
+    }
+    updateDisplay();
+  }
+
+  function inputDecimal() {
+    if (justEvaluated) {
+      currentValue = '0';
+      expressionText = '';
+      justEvaluated = false;
+    }
+    if (!currentValue.includes('.')) {
+      currentValue += '.';
+    }
+    updateDisplay();
+  }
+
+  function chooseOperator(symbol) {
+    if (pendingOperator && !justEvaluated) {
+      // chain: evaluate what's pending first
+      evaluate(false);
+    }
+    previousValue = currentValue;
+    pendingOperator = symbol;
+    expressionText = `${previousValue} ${symbol}`;
+    currentValue = '0';
+    justEvaluated = false;
+    updateDisplay();
+  }
+
+  function evaluate(finalPress) {
+    if (pendingOperator === null || previousValue === null) return;
+
+    const a = parseFloat(previousValue);
+    const b = parseFloat(currentValue);
+    const jsOp = opSymbolToJs[pendingOperator];
+
+    if (jsOp === '/' && b === 0) {
+      showError('Cannot divide by zero');
+      updateDisplay();
+      return;
+    }
+
+    let result;
+    switch (jsOp) {
+      case '+': result = a + b; break;
+      case '-': result = a - b; break;
+      case '*': result = a * b; break;
+      case '/': result = a / b; break;
+    }
+
+    // trim floating point noise
+    result = Math.round((result + Number.EPSILON) * 1e10) / 1e10;
+
+    if (finalPress) {
+      expressionText = `${previousValue} ${pendingOperator} ${currentValue} =`;
+    }
+
+    currentValue = String(result);
+    previousValue = null;
+    pendingOperator = null;
+    justEvaluated = finalPress;
+    updateDisplay();
+
+    if (!finalPress) {
+      // keep chaining: new previousValue becomes this result
+      previousValue = currentValue;
+    }
+  }
+
+  function clearAll() {
+    currentValue = '0';
+    previousValue = null;
+    pendingOperator = null;
+    expressionText = '';
+    justEvaluated = false;
+    updateDisplay();
+  }
+
+  function backspace() {
+    if (justEvaluated) return;
+    if (currentValue.length <= 1) {
+      currentValue = '0';
+    } else {
+      currentValue = currentValue.slice(0, -1);
+    }
+    updateDisplay();
+  }
+
+  function percent() {
+    const val = parseFloat(currentValue);
+    currentValue = String(val / 100);
+    updateDisplay();
+  }
+
+  document.querySelectorAll('button[data-num]').forEach(btn => {
+    btn.addEventListener('click', () => inputDigit(btn.dataset.num));
+  });
+
+  document.querySelectorAll('button[data-op]').forEach(btn => {
+    btn.addEventListener('click', () => chooseOperator(btn.dataset.op));
+  });
+
+  document.querySelector('[data-action="equals"]').addEventListener('click', () => evaluate(true));
+  document.querySelector('[data-action="clear"]').addEventListener('click', clearAll);
+  document.querySelector('[data-action="backspace"]').addEventListener('click', backspace);
+  document.querySelector('[data-action="decimal"]').addEventListener('click', inputDecimal);
+  document.querySelector('[data-action="percent"]').addEventListener('click', percent);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') inputDigit(e.key);
+    else if (e.key === '.') inputDecimal();
+    else if (e.key === '+') chooseOperator('+');
+    else if (e.key === '-') chooseOperator('−');
+    else if (e.key === '*') chooseOperator('×');
+    else if (e.key === '/') { e.preventDefault(); chooseOperator('÷'); }
+    else if (e.key === 'Enter' || e.key === '=') evaluate(true);
+    else if (e.key === 'Backspace') backspace();
+    else if (e.key === 'Escape') clearAll();
+  });
+
+  updateDisplay();
+})();
+</script>
+
+</body>
+</html>
