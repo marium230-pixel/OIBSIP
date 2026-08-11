@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ada Lovelace — Tribute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #10141c;
+    --ink-raised: #171d29;
+    --parchment: #ece2c8;
+    --parchment-raised: #f4ecd6;
+    --brass: #c9a227;
+    --brass-bright: #e0bc4a;
+    --wine: #6d2a2a;
+    --ink-text: #e8e3d5;
+    --ink-text-dim: #9aa0ad;
+    --parchment-text: #241f14;
+    --parchment-text-dim: #6b6045;
+    --rule: rgba(201, 162, 39, 0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--ink-text);
+    font-family: 'EB Garamond', serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .display { font-family: 'Playfair Display', serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  a { color: inherit; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 6vw;
+    background: rgba(16, 20, 28, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-mark {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    color: var(--brass-bright);
+  }
+
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-text-dim);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--brass-bright); }
+
+  @media (max-width: 640px) {
+    .nav-links { gap: 14px; }
+    .nav-links a { font-size: 9px; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    padding: 0 6vw;
+    background:
+      radial-gradient(circle at 82% 30%, rgba(201, 162, 39, 0.10), transparent 45%),
+      var(--ink);
+    overflow: hidden;
+  }
+
+  .gear-svg {
+    position: absolute;
+    top: 50%;
+    right: -8vw;
+    transform: translateY(-50%);
+    width: 46vw;
+    max-width: 620px;
+    opacity: 0.16;
+    z-index: 0;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 80px 0;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--brass);
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 6vw, 74px);
+    font-weight: 700;
+    line-height: 1.02;
+    color: var(--ink-text);
+    margin-bottom: 22px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--brass-bright);
+    font-weight: 500;
+  }
+
+  .hero-tagline {
+    font-size: 20px;
+    font-style: italic;
+    color: var(--ink-text-dim);
+    max-width: 480px;
+    margin-bottom: 30px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 28px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-text-dim);
+  }
+  .hero-meta span { display: block; }
+  .hero-meta b { display: block; color: var(--brass-bright); font-size: 13px; margin-bottom: 4px; }
+
+  .portrait-frame {
+    position: relative;
+    border: 1px solid var(--rule);
+    padding: 14px;
+    background: var(--ink-raised);
+  }
+  .portrait-frame::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    pointer-events: none;
+  }
+  .portrait-frame img {
+    width: 100%;
+    display: block;
+    filter: sepia(0.25) saturate(0.9) contrast(1.02);
+  }
+  .portrait-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--ink-text-dim);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 860px) {
+    .hero-inner { grid-template-columns: 1fr; padding: 60px 0; }
+    .gear-svg { opacity: 0.10; width: 80vw; right: -20vw; }
+    .portrait-frame { max-width: 280px; margin: 0 auto; }
+  }
+
+  /* ---------- SECTION LABEL ---------- */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ---------- BIOGRAPHY (parchment) ---------- */
+  .bio {
+    background: var(--parchment);
+    color: var(--parchment-text);
+    padding: 110px 6vw;
+  }
+  .bio-inner { max-width: 760px; margin: 0 auto; }
+  .bio .section-label { color: var(--wine); }
+  .bio .section-label::before { content: ''; width: 28px; height: 1px; background: var(--wine); }
+
+  .bio h2 {
+    font-size: clamp(30px, 4vw, 42px);
+    margin-bottom: 34px;
+    font-weight: 700;
+  }
+
+  .bio p {
+    font-size: 19px;
+    margin-bottom: 22px;
+    color: var(--parchment-text);
+  }
+  .bio p:first-of-type::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 700;
+    float: left;
+    line-height: 0.8;
+    margin: 8px 10px 0 0;
+    color: var(--wine);
+  }
+
+  /* ---------- QUOTE (ink, wine accent) ---------- */
+  .quote-block {
+    background: var(--ink);
+    padding: 100px 6vw;
+    text-align: center;
+    position: relative;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .quote-block::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 160px;
+    color: var(--wine);
+    opacity: 0.5;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 1;
+  }
+  .quote-text {
+    position: relative;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(24px, 3.4vw, 38px);
+    max-width: 820px;
+    margin: 0 auto 26px;
+    line-height: 1.4;
+    color: var(--parchment-raised);
+  }
+  .quote-attr {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+
+  /* ---------- TIMELINE (ink-raised, punch-card motif) ---------- */
+  .timeline-section {
+    background: var(--ink-raised);
+    padding: 110px 6vw;
+  }
+  .timeline-inner { max-width: 900px; margin: 0 auto; }
+  .timeline-section .section-label { color: var(--brass); }
+  .timeline-section .section-label::before { content: ''; width: 28px; height: 1px; background: var(--brass); }
+
+  .timeline-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(30px, 4vw, 42px);
+    margin-bottom: 50px;
+    color: var(--ink-text);
+  }
+
+  .punch-strip {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 60px;
+  }
+  .punch-strip span {
+    flex: 1;
+    height: 10px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+  .punch-strip span.on { background: var(--brass); }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 110px 24px 1fr;
+    gap: 0;
+    position: relative;
+  }
+  .tl-item:not(:last-child) { padding-bottom: 44px; }
+
+  .tl-year {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--brass-bright);
+    padding-top: 2px;
+  }
+
+  .tl-node-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tl-node {
+    width: 12px;
+    height: 12px;
+    background: var(--ink-raised);
+    border: 2px solid var(--brass);
+    border-radius: 2px;
+    flex-shrink: 0;
+    transform: rotate(45deg);
+  }
+  .tl-line {
+    flex: 1;
+    width: 1px;
+    background: var(--rule);
+    margin-top: 6px;
+  }
+  .tl-item:last-child .tl-line { display: none; }
+
+  .tl-content { padding-left: 24px; padding-top: 0px; }
+  .tl-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink-text);
+    margin-bottom: 6px;
+  }
+  .tl-content p {
+    font-size: 16px;
+    color: var(--ink-text-dim);
+    max-width: 480px;
+  }
+
+  @media (max-width: 640px) {
+    .tl-item { grid-template-columns: 70px 20px 1fr; }
+    .tl-year { font-size: 13px; }
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    background: var(--ink);
+    padding: 50px 6vw 40px;
+    text-align: center;
+    border-top: 1px solid var(--rule);
+  }
+  footer p {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-text-dim);
+  }
+  footer .foot-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--brass-bright);
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-mark">A.L. 1815—1852</div>
+  <ul class="nav-links">
+    <li><a href="#biography">Biography</a></li>
+    <li><a href="#quote">Words</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <svg class="gear-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="120" fill="none" stroke="#c9a227" stroke-width="2"/>
+    <circle cx="200" cy="200" r="80" fill="none" stroke="#c9a227" stroke-width="1.5"/>
+    <circle cx="200" cy="200" r="150" fill="none" stroke="#c9a227" stroke-width="1"/>
+    <g stroke="#c9a227" stroke-width="2">
+      <line x1="200" y1="50" x2="200" y2="80"/>
+      <line x1="200" y1="320" x2="200" y2="350"/>
+      <line x1="50" y1="200" x2="80" y2="200"/>
+      <line x1="320" y1="200" x2="350" y2="200"/>
+      <line x1="94" y1="94" x2="115" y2="115"/>
+      <line x1="285" y1="285" x2="306" y2="306"/>
+      <line x1="94" y1="306" x2="115" y2="285"/>
+      <line x1="285" y1="115" x2="306" y2="94"/>
+    </g>
+    <circle cx="200" cy="200" r="6" fill="#c9a227"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Countess of Lovelace · Mathematician</div>
+      <h1 class="display">Ada<br><em>Lovelace</em></h1>
+      <p class="hero-tagline">"That brain of mine is something more than merely mortal." She wrote the first algorithm meant for a machine — a century before there was a machine built to run it.</p>
+      <div class="hero-meta">
+        <span><b>Born</b>10 Dec 1815, London</span>
+        <span><b>Died</b>27 Nov 1852, age 36</span>
+        <span><b>Known for</b>First published algorithm</span>
+      </div>
+    </div>
+    <div>
+      <div class="portrait-frame">
+        <img src="portrait.jpg" alt="Portrait of Ada Lovelace, watercolour by Alfred Edward Chalon, 1840">
+      </div>
+      <div class="portrait-caption mono">Watercolour by A. E. Chalon, c. 1840 — public domain</div>
+    </div>
+  </div>
+</section>
+
+<section class="bio" id="biography">
+  <div class="bio-inner">
+    <div class="section-label">Chapter One</div>
+    <h2 class="display">A mind raised on mathematics</h2>
+    <p>Ada Lovelace was born in London in 1815, the only legitimate child of the poet Lord Byron and Annabella Milbanke, a woman with an unusually rigorous mathematical education for her time. Byron left the marriage within weeks of Ada's birth and the two never met again. Wary of the "poetic" temperament she associated with her estranged husband, Annabella steered her daughter deliberately toward logic, geometry, and science, arranging tutors from an early age in a household that treated mathematics less as an accomplishment than as a discipline of the mind.</p>
+    <p>That grounding put her in rare company. Through family friend and mentor Mary Somerville, one of the era's few prominent female scientists, Ada was introduced into scientific circles most women of her class never entered. She later studied under Augustus De Morgan, a founding figure of modern logic, who recognized in his student a capacity for abstract mathematical thought he considered exceptional even among his university pupils.</p>
+    <p>In 1833, at seventeen, Ada met Charles Babbage and saw a working section of his Difference Engine — a machine built to calculate mathematical tables automatically. Where most visitors saw an impressive calculator, she saw something closer to a new kind of instrument, and the meeting began a correspondence and collaboration with Babbage that would last the rest of her life.</p>
+    <p>That collaboration reached its peak between 1842 and 1843, when Ada translated an Italian engineer's French-language paper on Babbage's unbuilt successor machine, the Analytical Engine. She didn't stop at translation — her own appended notes ran roughly three times the length of the original article. Buried in the section labeled "Note G" was a detailed, step-by-step method for the Engine to compute Bernoulli numbers: an algorithm, written for a machine that existed only on paper, decades before anything like a computer would run one. She went further still, suggesting the Engine's logic wasn't bound to numbers at all — that it might one day manipulate symbols, letters, even music. Ada died of uterine cancer in 1852, at thirty-six, having lived just long enough to publish the one paper history would remember her by.</p>
+  </div>
+</section>
+
+<section class="quote-block" id="quote">
+  <p class="quote-text">"The Analytical Engine has no pretensions whatever to originate anything. It can do whatever we know how to order it to perform."</p>
+  <p class="quote-attr mono">— Ada Lovelace, Notes on the Analytical Engine, 1843</p>
+</section>
+
+<section class="timeline-section" id="timeline">
+  <div class="timeline-inner">
+    <div class="section-label">The Record</div>
+    <h2>A life, in a few punched cards</h2>
+
+    <div class="punch-strip">
+      <span class="on"></span><span></span><span class="on"></span><span class="on"></span><span></span>
+      <span class="on"></span><span></span><span></span><span class="on"></span><span class="on"></span>
+      <span></span><span class="on"></span><span class="on"></span><span></span><span class="on"></span>
+      <span></span><span class="on"></span><span></span><span class="on"></span><span></span>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-year mono">1815</div>
+      <div class="tl-node-col"><div class="tl-node"></div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <h3>Born in London</h3>
+        <p>Daughter of Lord Byron and Annabella Milbanke; her parents separate within weeks.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-year mono">1833</div>
+      <div class="tl-node-col"><div class="tl-node"></div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <h3>Meets Charles Babbage</h3>
+        <p>Sees a demonstration of the Difference Engine at seventeen and begins a lifelong collaboration.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-year mono">1835</div>
+      <div class="tl-node-col"><div class="tl-node"></div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <h3>Becomes Countess of Lovelace</h3>
+        <p>Marries William King, later created Earl of Lovelace, giving her the title she's known by today.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-year mono">1843</div>
+      <div class="tl-node-col"><div class="tl-node"></div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <h3>Publishes "Notes on the Analytical Engine"</h3>
+        <p>Her Note G contains a full method for computing Bernoulli numbers — the first algorithm written for a machine.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-year mono">1852</div>
+      <div class="tl-node-col"><div class="tl-node"></div></div>
+      <div class="tl-content">
+        <h3>Dies at thirty-six</h3>
+        <p>Uterine cancer ends her life a decade after her one major published work — a legacy that took another century to be understood.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-name">Ada Lovelace, 1815–1852</div>
+  <p>Tribute Page · OIBSIP Web Development &amp; Designing, Level 2 · Marium Rehan Baig</p>
+</footer>
+
+</body>
+</html>
