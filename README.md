@@ -19,12 +19,12 @@ This repository holds all four task submissions for the Oasis Infobyte SIP, Web 
 
 ## ✅ Progress
 
-| # | Task | Status | Folder |
-|---|------|--------|--------|
-| 1 | Calculator | ✅ Done | [`WebDev-L2-Calculator`](./WebDev-L2-Calculator) |
-| 2 | Tribute Page | ✅ Done | [`WebDev-L2-TributePage`](./WebDev-L2-TributePage) |
-| 3 | To-Do Web App | ✅ Done | [`WebDev-L2-TodoApp`](./WebDev-L2-TodoApp) |
-| 4 | Login Authentication System | ✅ Done | [`WebDev-L2-LoginAuth`](./WebDev-L2-LoginAuth) |
+| # | Task | Status | Folder | Live Demo |
+|---|------|--------|--------|-----------|
+| 1 | Calculator | ✅ Done | [`WebDev-L2-Calculator`](./WebDev-L2-Calculator) | [View](https://marium230-pixel.github.io/OIBSIP/WebDev-L2-Calculator/) |
+| 2 | Tribute Page | ✅ Done | [`WebDev-L2-TributePage`](./WebDev-L2-TributePage) | [View](https://marium230-pixel.github.io/OIBSIP/WebDev-L2-TributePage/) |
+| 3 | To-Do Web App | ✅ Done | [`WebDev-L2-TodoApp`](./WebDev-L2-TodoApp) | [View](https://marium230-pixel.github.io/OIBSIP/WebDev-L2-TodoApp/) |
+| 4 | Login Authentication System | ✅ Done | [`WebDev-L2-LoginAuth`](./WebDev-L2-LoginAuth) | [View](https://login-auth-app.bonto.run/login.html) |
 
 ## 🧱 Tech Stack & Project Details
 
