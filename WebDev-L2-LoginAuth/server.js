@@ -2,13 +2,19 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fs = require('fs');
 const Database = require('better-sqlite3');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ---------- Database setup ----------
-const db = new Database(path.join(__dirname, 'data', 'users.db'));
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const db = new Database(path.join(dataDir, 'users.db'));
 db.pragma('journal_mode = WAL');
 
 db.exec(`
