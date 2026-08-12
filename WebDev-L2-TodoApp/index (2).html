@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-Do — OIBSIP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1512;
+    --panel: #241d18;
+    --panel-raised: #2f261f;
+    --input-bg: #2a221c;
+    --accent: #c1502e;
+    --accent-dim: rgba(193, 80, 46, 0.16);
+    --op: #7d8f85;
+    --op-dim: rgba(125, 143, 133, 0.14);
+    --text: #f2e9df;
+    --text-dim: #a89685;
+    --danger: #d64545;
+    --danger-dim: rgba(214, 69, 69, 0.14);
+    --border: #453930;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(217, 181, 104, 0.07), transparent 40%),
+      radial-gradient(circle at 90% 95%, rgba(198, 112, 140, 0.06), transparent 40%);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    padding: 40px 20px 80px;
+  }
+
+  .wrap { max-width: 620px; margin: 0 auto; }
+
+  .page-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .page-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    margin: 0 0 6px;
+  }
+  .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 30px; }
+
+  .add-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 34px;
+  }
+
+  #task-input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #task-input:focus { border-color: var(--accent); }
+  #task-input::placeholder { color: var(--text-dim); }
+
+  #add-btn {
+    background: var(--accent);
+    color: #241826;
+    border: none;
+    border-radius: 12px;
+    padding: 0 22px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #add-btn:hover { background: #e6c885; }
+
+  .list-section { margin-bottom: 36px; }
+
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .list-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .list-title.pending-title { color: var(--op); }
+  .list-title.completed-title { color: var(--accent); }
+
+  .count-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 12px;
+    color: var(--text-dim);
+  }
+
+  .task-list { display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0; margin: 0; }
+
+  .task {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .task-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--op);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .task.completed .task-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .task.completed .task-check::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #241826;
+    font-weight: 700;
+  }
+
+  .task-body { flex: 1; min-width: 0; }
+
+  .task-text {
+    font-size: 15px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .task.completed .task-text {
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+
+  .task-edit-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    outline: none;
+  }
+
+  .task-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 5px;
+  }
+
+  .task-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .task-actions button {
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .task-actions .edit-btn:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .task-actions .delete-btn:hover { background: var(--danger-dim); border-color: var(--danger); color: var(--danger); }
+  .task-actions .save-btn { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  .empty-state {
+    text-align: center;
+    padding: 34px 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="page-label">To-Do App · OIBSIP Web Dev L2</div>
+  <h1>Task Manager</h1>
+  <p class="subtitle">Add tasks, track what's pending, mark what's done.</p>
+
+  <div class="add-row">
+    <input type="text" id="task-input" placeholder="What needs doing?" maxlength="200">
+    <button id="add-btn">Add Task</button>
+  </div>
+
+  <div class="list-section">
+    <div class="list-header">
+      <span class="list-title pending-title">Pending</span>
+      <span class="count-badge" id="pending-count">0 pending</span>
+    </div>
+    <ul class="task-list" id="pending-list"></ul>
+    <div class="empty-state" id="pending-empty">No pending tasks — add one above to get started.</div>
+  </div>
+
+  <div class="list-section">
+    <div class="list-header">
+      <span class="list-title completed-title">Completed</span>
+      <span class="count-badge" id="completed-count">0 completed</span>
+    </div>
+    <ul class="task-list" id="completed-list"></ul>
+    <div class="empty-state" id="completed-empty">Nothing completed yet — finished tasks land here.</div>
+  </div>
+
+  <footer>Marium Rehan Baig — Web Development &amp; Designing</footer>
+</div>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'oibsip-todo-tasks';
+
+  const input = document.getElementById('task-input');
+  const addBtn = document.getElementById('add-btn');
+  const pendingList = document.getElementById('pending-list');
+  const completedList = document.getElementById('completed-list');
+  const pendingCount = document.getElementById('pending-count');
+  const completedCount = document.getElementById('completed-count');
+  const pendingEmpty = document.getElementById('pending-empty');
+  const completedEmpty = document.getElementById('completed-empty');
+
+  let tasks = loadTasks();
+  let editingId = null;
+
+  function loadTasks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveTasks() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    } catch (e) { /* storage unavailable — app still works in-session */ }
+  }
+
+  function formatTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+           ' · ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function addTask() {
+    const text = input.value.trim();
+    if (!text) return;
+    tasks.unshift({
+      id: Date.now() + Math.random().toString(16).slice(2),
+      text,
+      completed: false,
+      createdAt: Date.now(),
+      completedAt: null
+    });
+    input.value = '';
+    saveTasks();
+    render();
+    input.focus();
+  }
+
+  function toggleComplete(id) {
+    const t = tasks.find(t => t.id === id);
+    if (!t) return;
+    t.completed = !t.completed;
+    t.completedAt = t.completed ? Date.now() : null;
+    saveTasks();
+    render();
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    render();
+  }
+
+  function startEdit(id) {
+    editingId = id;
+    render();
+  }
+
+  function saveEdit(id, newText) {
+    const trimmed = newText.trim();
+    if (trimmed) {
+      const t = tasks.find(t => t.id === id);
+      if (t) t.text = trimmed;
+    }
+    editingId = null;
+    saveTasks();
+    render();
+  }
+
+  function createTaskEl(task) {
+    const li = document.createElement('li');
+    li.className = 'task' + (task.completed ? ' completed' : '');
+
+    const check = document.createElement('button');
+    check.className = 'task-check';
+    check.setAttribute('aria-label', task.completed ? 'Mark as pending' : 'Mark as complete');
+    check.addEventListener('click', () => toggleComplete(task.id));
+    li.appendChild(check);
+
+    const body = document.createElement('div');
+    body.className = 'task-body';
+
+    if (editingId === task.id) {
+      const editInput = document.createElement('input');
+      editInput.type = 'text';
+      editInput.className = 'task-edit-input';
+      editInput.value = task.text;
+      editInput.maxLength = 200;
+      body.appendChild(editInput);
+      setTimeout(() => { editInput.focus(); editInput.select(); }, 0);
+
+      editInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveEdit(task.id, editInput.value);
+        if (e.key === 'Escape') { editingId = null; render(); }
+      });
+    } else {
+      const textEl = document.createElement('div');
+      textEl.className = 'task-text';
+      textEl.textContent = task.text;
+      body.appendChild(textEl);
+
+      const meta = document.createElement('div');
+      meta.className = 'task-meta';
+      meta.textContent = task.completed
+        ? `Added ${formatTime(task.createdAt)} · Completed ${formatTime(task.completedAt)}`
+        : `Added ${formatTime(task.createdAt)}`;
+      body.appendChild(meta);
+    }
+    li.appendChild(body);
+
+    const actions = document.createElement('div');
+    actions.className = 'task-actions';
+
+    if (editingId === task.id) {
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'save-btn';
+      saveBtn.textContent = '✓';
+      saveBtn.setAttribute('aria-label', 'Save edit');
+      saveBtn.addEventListener('click', () => {
+        const editInput = body.querySelector('.task-edit-input');
+        saveEdit(task.id, editInput.value);
+      });
+      actions.appendChild(saveBtn);
+    } else {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = '✎';
+      editBtn.setAttribute('aria-label', 'Edit task');
+      editBtn.addEventListener('click', () => startEdit(task.id));
+      actions.appendChild(editBtn);
+    }
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.textContent = '✕';
+    delBtn.setAttribute('aria-label', 'Delete task');
+    delBtn.addEventListener('click', () => deleteTask(task.id));
+    actions.appendChild(delBtn);
+
+    li.appendChild(actions);
+    return li;
+  }
+
+  function render() {
+    const pending = tasks.filter(t => !t.completed);
+    const completed = tasks.filter(t => t.completed);
+
+    pendingList.innerHTML = '';
+    completedList.innerHTML = '';
+
+    pending.forEach(t => pendingList.appendChild(createTaskEl(t)));
+    completed.forEach(t => completedList.appendChild(createTaskEl(t)));
+
+    pendingCount.textContent = `${pending.length} pending`;
+    completedCount.textContent = `${completed.length} completed`;
+
+    pendingEmpty.style.display = pending.length ? 'none' : 'block';
+    completedEmpty.style.display = completed.length ? 'none' : 'block';
+  }
+
+  addBtn.addEventListener('click', addTask);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
