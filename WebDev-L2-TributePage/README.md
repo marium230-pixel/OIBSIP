@@ -7,6 +7,7 @@ Built for the **Oasis Infobyte SIP — Web Development & Designing, Level 2**.
 `HTML5` `CSS3` `No-Framework`
 
 🔗 **Repository:** [github.com/marium230-pixel/OIBSIP/tree/main/WebDev-L2-TributePage](https://github.com/marium230-pixel/OIBSIP/tree/main/WebDev-L2-TributePage)
+🌐 **Live Demo:** [marium230-pixel.github.io/OIBSIP/WebDev-L2-TributePage](https://marium230-pixel.github.io/OIBSIP/WebDev-L2-TributePage/)
 
 ---
 
